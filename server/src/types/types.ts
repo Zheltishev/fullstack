@@ -14,3 +14,10 @@ export interface IControllerConnectionData {
   sn: number;
   message: IControllerConnectionMessage[];
 }
+
+export interface ISetActiveResponse {
+  id: number;
+  operation: string;
+  active: number;
+  online: number;
+}
