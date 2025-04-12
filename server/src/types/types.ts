@@ -21,3 +21,8 @@ export interface ISetActiveResponse {
   active: number;
   online: number;
 }
+
+export interface ISetActiveStatus {
+  id: number;
+  success: number;
+}
