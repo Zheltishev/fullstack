@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IControllerConnectionData, ISetActiveResponse } from 'src/types/types';
+import { IControllerConnectionData } from 'src/types/types';
 
 @Injectable()
 export class ConnectionService {
@@ -7,7 +7,7 @@ export class ConnectionService {
     this.activeController(data as IControllerConnectionData);
   }
 
-  activeController(data: IControllerConnectionData): ISetActiveResponse {
+  activeController(data: IControllerConnectionData): any {
     console.log(`Data is IControllerConnectionData: `, data);
 
     const controllerId = data.messages[0].id;
@@ -15,10 +15,16 @@ export class ConnectionService {
     console.log(`controller Id: `, controllerId);
 
     return {
-      id: controllerId,
-      operation: 'set_active',
-      active: 1,
-      online: 1,
+      date: '2024-07-25 10:20:30',
+      interval: 10,
+      messages: [
+        {
+          id: controllerId,
+          operation: 'set_active',
+          active: 1,
+          online: 1,
+        },
+      ],
     };
   }
 }
