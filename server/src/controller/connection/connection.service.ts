@@ -4,28 +4,25 @@ import { IControllerConnectionData, ISetActiveResponse } from 'src/types/types';
 @Injectable()
 export class ConnectionService {
   private isControllerConnectionData(
-    data: any,
+    data: unknown,
   ): data is IControllerConnectionData {
     return (
       typeof data === 'object' &&
       data !== null &&
-      'id' in data &&
-      'operation' in data &&
-      'active' in data &&
-      'online' in data
+      'type' in data &&
+      'sn' in data &&
+      'message' in data &&
+      Array.isArray((data as IControllerConnectionData).message)
     );
   }
 
   checkData(data: unknown): void {
     console.log('Check data type: ', data);
 
-    // Проверяем, является ли data типом IControllerConnectionData
     if (this.isControllerConnectionData(data)) {
-      // Если проверка прошла, вызываем activeController
-      const result = this.activeController(data);
-      console.log('Result from activeController: ', result);
+      this.activeController(data);
     } else {
-      console.log('Data is not of type IControllerConnectionData');
+      console.error('Invalid data type!');
     }
   }
 
