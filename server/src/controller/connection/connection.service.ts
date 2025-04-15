@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Res } from '@nestjs/common';
 // import axios from 'axios';
 import { Response } from 'express';
 import { IControllerConnectionData } from 'src/types/types';
@@ -6,11 +6,14 @@ import { currentTime } from 'src/utils/currentTime';
 
 @Injectable()
 export class ConnectionService {
-  checkData(data: unknown, res: Response): void {
+  checkData(data: unknown, @Res() res: Response): void {
     this.activeController(data as IControllerConnectionData, res);
   }
 
-  activeController(data: IControllerConnectionData, res: Response): void {
+  activeController(
+    data: IControllerConnectionData,
+    @Res() res: Response,
+  ): void {
     console.log(`Data is IControllerConnectionData: `, data);
 
     // const controllerIp = `http://${data.messages[0].controller_ip}`;
