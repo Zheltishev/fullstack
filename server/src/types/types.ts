@@ -12,7 +12,7 @@ interface IControllerConnectionMessage {
 export interface IControllerConnectionData {
   type: string;
   sn: number;
-  message: IControllerConnectionMessage[];
+  messages: IControllerConnectionMessage[];
 }
 
 export interface ISetActiveResponse {

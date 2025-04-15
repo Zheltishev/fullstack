@@ -10,7 +10,7 @@ export class ConnectionService {
   activeController(data: IControllerConnectionData): ISetActiveResponse {
     console.log(`Data is IControllerConnectionData: `, data);
 
-    const controllerId = data.message[0].id;
+    const controllerId = data.messages[0].id;
 
     console.log(`controller Id: `, controllerId);
 
