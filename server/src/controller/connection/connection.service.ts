@@ -24,7 +24,7 @@ export class ConnectionService {
       ],
     };
 
-    console.log(response);
+    console.log(JSON.stringify(response));
 
     return JSON.stringify(response);
   }
