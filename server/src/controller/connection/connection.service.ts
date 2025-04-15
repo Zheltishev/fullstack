@@ -13,7 +13,7 @@ export class ConnectionService {
     console.log(`Data is IControllerConnectionData: `, data);
 
     const response = {
-      date: currentTime(),
+      date: currentTime(3),
       interval: 10,
       messages: [
         {

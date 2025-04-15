@@ -1,5 +1,7 @@
-export function currentTime() {
+export function currentTime(offsetHours: number) {
   const now = new Date();
+
+  now.setHours(now.getHours() + offsetHours);
 
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
