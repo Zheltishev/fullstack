@@ -11,8 +11,7 @@ export class ConnectionService {
       data !== null &&
       'type' in data &&
       'sn' in data &&
-      'message' in data &&
-      Array.isArray((data as IControllerConnectionData).message)
+      'message' in data
     );
   }
 
