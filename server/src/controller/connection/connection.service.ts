@@ -24,6 +24,8 @@ export class ConnectionService {
       ],
     };
 
+    console.log(response);
+
     return JSON.stringify(response);
   }
 }
