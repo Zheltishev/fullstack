@@ -4,16 +4,18 @@ import { IControllerConnectionData, ISetActiveResponse } from 'src/types/types';
 @Injectable()
 export class ConnectionService {
   checkData(data: unknown): void {
-    console.log('Check data type: ', data);
-
     this.activeController(data as IControllerConnectionData);
   }
 
   activeController(data: IControllerConnectionData): ISetActiveResponse {
     console.log(`Data is IControllerConnectionData: `, data);
 
+    const controllerId = data.message[0].id;
+
+    console.log(`controller Id: `, controllerId);
+
     return {
-      id: data.message[0].id,
+      id: controllerId,
       operation: 'set_active',
       active: 1,
       online: 1,
