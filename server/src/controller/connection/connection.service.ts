@@ -1,22 +1,18 @@
 import { HttpStatus, Injectable, Res } from '@nestjs/common';
-// import axios from 'axios';
 import { Response } from 'express';
-import { IControllerConnectionData } from 'src/types/types';
+import { IControllerData } from 'src/types/types';
 import { currentTime } from 'src/utils/currentTime';
 
 @Injectable()
 export class ConnectionService {
   checkData(data: unknown, @Res() res: Response): void {
-    this.activeController(data as IControllerConnectionData, res);
+    this.activeController(data as IControllerData, res);
   }
 
-  activeController(
-    data: IControllerConnectionData,
-    @Res() res: Response,
-  ): void {
-    console.log(`Data is IControllerConnectionData: `, data);
+  activeController(data: IControllerData, @Res() res: Response): void {
+    console.log('messages ------------ ');
+    console.log(data.messages);
 
-    // const controllerIp = `http://${data.messages[0].controller_ip}`;
     const response = {
       date: currentTime(3),
       interval: 10,
@@ -31,11 +27,5 @@ export class ConnectionService {
     };
 
     res.status(HttpStatus.OK).json(response);
-
-    // try {
-    //   await axios.post(controllerIp, response);
-    // } catch (error) {
-    //   console.error('Error send response to controller', error);
-    // }
   }
 }
