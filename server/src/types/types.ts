@@ -1,4 +1,10 @@
-interface IControllerConnectionMessage {
+export interface IControllerData {
+  type: string;
+  sn: number;
+  messages: IPowerOn[] | ISetActive[];
+}
+
+interface IPowerOn {
   id: number;
   operation: string;
   fw: string;
@@ -9,10 +15,9 @@ interface IControllerConnectionMessage {
   reader_protocol: string;
 }
 
-export interface IControllerConnectionData {
-  type: string;
-  sn: number;
-  messages: IControllerConnectionMessage[];
+interface ISetActive {
+  id: number;
+  success: number;
 }
 
 export interface ISetActiveResponse {
@@ -20,9 +25,4 @@ export interface ISetActiveResponse {
   operation: string;
   active: number;
   online: number;
-}
-
-export interface ISetActiveStatus {
-  id: number;
-  success: number;
 }
