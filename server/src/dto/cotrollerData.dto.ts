@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsNumber, IsString, ValidateNested } from 'class-validator';
 
-export class DtoControllerConnection {
+export class DtoControllerData {
   @IsString()
   type: string;
 
@@ -11,7 +11,7 @@ export class DtoControllerConnection {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => Object)
-  messages: (DtoPowerOn | DtoEvent)[];
+  messages: (DtoPowerOn | DtoEvent | DtoSetActive)[];
 }
 
 export class DtoPowerOn {

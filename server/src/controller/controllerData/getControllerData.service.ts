@@ -2,13 +2,14 @@ import { HttpStatus, Injectable, Res } from '@nestjs/common';
 import { Response } from 'express';
 import {
   DtoArrayEvents,
-  DtoControllerConnection,
+  DtoControllerData,
   DtoPowerOn,
+  DtoSetActive,
 } from 'src/dto/cotrollerData.dto';
 import { currentTime } from 'src/utils/currentTime';
 
 @Injectable()
-export class ConnectionService {
+export class GetControllerData {
   private isPowerOn(message: any): message is DtoPowerOn {
     return (
       'operation' in message &&
@@ -23,17 +24,23 @@ export class ConnectionService {
     return 'id' in message && 'operation' in message && 'events' in message;
   }
 
-  checkData(data: DtoControllerConnection, @Res() res: Response): void {
+  private isSetActive(message: any): message is DtoSetActive {
+    return 'id' in message && 'success' in message;
+  }
+
+  checkData(data: DtoControllerData, @Res() res: Response): void {
     console.log('messages ------------ ');
     console.log(data.messages);
 
     data.messages.forEach((message) => {
       if (this.isPowerOn(message)) {
         this.activeController(message, res);
-      }
-
-      if (this.isArrayEvents(message)) {
+      } else if (this.isArrayEvents(message)) {
         this.eventsHandle(message, res);
+      } else if (this.isSetActive(message)) {
+        this.confirmActivation();
+      } else {
+        this.unknownType();
       }
     });
   }
@@ -68,5 +75,13 @@ export class ConnectionService {
     };
 
     res.status(HttpStatus.OK).json(response);
+  }
+
+  confirmActivation(): void {
+    console.log('confirmActivation');
+  }
+
+  unknownType(): void {
+    console.log('unknown data type!');
   }
 }
