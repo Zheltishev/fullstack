@@ -58,6 +58,10 @@ export class GetControllerData {
           active: 1,
           online: 1,
         },
+        {
+          id: message.id,
+          operation: 'read_cards',
+        },
       ],
     };
 
