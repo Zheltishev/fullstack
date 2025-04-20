@@ -69,9 +69,15 @@ export class GetControllerData {
     console.log(message.events);
 
     const response = {
-      id: message.id,
-      operation: 'events',
-      events_success: message.events.length,
+      date: currentTime(3),
+      interval: 10,
+      messages: [
+        {
+          id: message.id,
+          operation: 'events',
+          events_success: message.events.length,
+        },
+      ],
     };
 
     res.status(HttpStatus.OK).json(response);
