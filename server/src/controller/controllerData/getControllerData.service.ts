@@ -3,6 +3,7 @@ import { Response } from 'express';
 import {
   DtoArrayEvents,
   DtoControllerData,
+  DtoPing,
   DtoPowerOn,
   DtoSetActive,
 } from 'src/dto/cotrollerData.dto';
@@ -28,6 +29,15 @@ export class GetControllerData {
     return 'id' in message && 'success' in message;
   }
 
+  private isPing(message: any): message is DtoPing {
+    return (
+      'id' in message &&
+      'operation' in message &&
+      'active' in message &&
+      'mode' in message
+    );
+  }
+
   checkData(data: DtoControllerData, @Res() res: Response): void {
     console.log('messages ------------ ');
     console.log(data.messages);
@@ -39,6 +49,8 @@ export class GetControllerData {
         this.eventsHandle(message, res);
       } else if (this.isSetActive(message)) {
         this.confirmActivation();
+      } else if (this.isPing(message)) {
+        this.answerPing(message, res);
       } else {
         this.unknownType();
       }
@@ -76,6 +88,23 @@ export class GetControllerData {
           id: message.id,
           operation: 'events',
           events_success: message.events.length,
+        },
+      ],
+    };
+
+    res.status(HttpStatus.OK).json(response);
+  }
+
+  answerPing(message: DtoPing, @Res() res: Response): void {
+    console.log('answer ping');
+
+    const response = {
+      date: currentTime(3),
+      interval: 10,
+      messages: [
+        {
+          id: message.id,
+          success: 1,
         },
       ],
     };

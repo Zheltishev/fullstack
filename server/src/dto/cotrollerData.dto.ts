@@ -11,7 +11,7 @@ export class DtoControllerData {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => Object)
-  messages: (DtoPowerOn | DtoEvent | DtoSetActive)[];
+  messages: (DtoPowerOn | DtoEvent | DtoSetActive | DtoPing)[];
 }
 
 export class DtoPowerOn {
@@ -65,6 +65,20 @@ export class DtoEvent {
 
   @IsNumber()
   flag: number;
+}
+
+export class DtoPing {
+  @IsNumber()
+  id: number;
+
+  @IsString()
+  operation: string;
+
+  @IsNumber()
+  active: number;
+
+  @IsNumber()
+  mode: number;
 }
 
 export class DtoSetActive {
