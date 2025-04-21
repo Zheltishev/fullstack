@@ -1,8 +1,10 @@
 import { HttpStatus, Injectable, Res } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 import { Response } from 'express';
 import {
   DtoArrayEvents,
   DtoControllerData,
+  DtoEvent,
   DtoPing,
   DtoPowerOn,
   DtoSetActive,
@@ -11,6 +13,8 @@ import { currentTime } from 'src/utils/currentTime';
 
 @Injectable()
 export class GetControllerData {
+  prisma = new PrismaClient();
+
   private isPowerOn(message: any): message is DtoPowerOn {
     return (
       'operation' in message &&
@@ -38,15 +42,18 @@ export class GetControllerData {
     );
   }
 
-  checkData(data: DtoControllerData, @Res() res: Response): void {
+  async checkData(
+    data: DtoControllerData,
+    @Res() res: Response,
+  ): Promise<void> {
     console.log('messages ------------ ');
     console.log(data.messages);
 
-    data.messages.forEach((message) => {
+    for (const message of data.messages) {
       if (this.isPowerOn(message)) {
         this.activeController(message, res);
       } else if (this.isArrayEvents(message)) {
-        this.eventsHandle(message, res);
+        await this.eventsHandle(message, res);
       } else if (this.isSetActive(message)) {
         this.confirmActivation();
       } else if (this.isPing(message)) {
@@ -54,7 +61,7 @@ export class GetControllerData {
       } else {
         this.unknownType();
       }
-    });
+    }
   }
 
   activeController(message: DtoPowerOn, @Res() res: Response): void {
@@ -76,23 +83,63 @@ export class GetControllerData {
     res.status(HttpStatus.OK).json(response);
   }
 
-  eventsHandle(message: DtoArrayEvents, @Res() res: Response): void {
+  async eventsHandle(
+    message: DtoArrayEvents,
+    @Res() res: Response,
+  ): Promise<void> {
     console.log('execute eventsHandle');
     console.log(message.events);
 
-    const response = {
-      date: currentTime(3),
-      interval: 10,
-      messages: [
-        {
-          id: message.id,
-          operation: 'events',
-          events_success: message.events.length,
-        },
-      ],
-    };
+    try {
+      const events = message.events.map((event: DtoEvent) => ({
+        flag: event.flag,
+        event: event.event,
+        time: event.time,
+        card: event.card,
+      }));
 
-    res.status(HttpStatus.OK).json(response);
+      const result = await this.prisma.event.createMany({
+        data: events,
+      });
+
+      if (result.count > 0) {
+        const response = {
+          date: currentTime(3),
+          interval: 10,
+          messages: [
+            {
+              id: message.id,
+              operation: 'events',
+              events_success: message.events.length,
+            },
+          ],
+        };
+
+        console.log('wrote events');
+
+        res.status(HttpStatus.OK).json(response);
+      } else {
+        console.log('events was not add');
+
+        res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'No events were added to the database',
+        });
+      }
+    } catch (error) {
+      console.log('events execute error');
+
+      if (error instanceof Error) {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: 'An error occurred',
+          error: error.message,
+        });
+      } else {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: 'An unknown error occurred',
+          error: String(error),
+        });
+      }
+    }
   }
 
   answerPing(message: DtoPing, @Res() res: Response): void {
