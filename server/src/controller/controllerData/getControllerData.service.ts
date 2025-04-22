@@ -106,7 +106,7 @@ export class GetControllerData {
       const eventPromises = message.events.map((event: DtoEvent) => ({
         flag: event.flag,
         event: event.event,
-        time: event.time,
+        time: new Date(event.time),
         card: event.card,
       }));
 
