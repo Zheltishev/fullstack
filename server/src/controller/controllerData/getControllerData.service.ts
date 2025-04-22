@@ -91,40 +91,36 @@ export class GetControllerData {
     console.log(message.events);
 
     try {
-      const events = message.events.map((event: DtoEvent) => ({
-        flag: event.flag,
-        event: event.event,
-        time: event.time,
-        card: event.card,
-      }));
-
-      const result = await this.prisma.event.createMany({
-        data: events,
-      });
-
-      if (result.count > 0) {
-        const response = {
-          date: currentTime(3),
-          interval: 10,
-          messages: [
-            {
-              id: message.id,
-              operation: 'events',
-              events_success: message.events.length,
-            },
-          ],
+      const eventPromises = message.events.map(async (event: DtoEvent) => {
+        const recordedEvent = {
+          flag: event.flag,
+          event: event.event,
+          time: event.time,
+          card: event.card,
         };
 
-        console.log('wrote events');
-
-        res.status(HttpStatus.OK).json(response);
-      } else {
-        console.log('events was not add');
-
-        res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'No events were added to the database',
+        await this.prisma.event.create({
+          data: recordedEvent,
         });
-      }
+      });
+
+      await Promise.all(eventPromises);
+
+      const response = {
+        date: currentTime(3),
+        interval: 10,
+        messages: [
+          {
+            id: message.id,
+            operation: 'events',
+            events_success: message.events.length,
+          },
+        ],
+      };
+
+      console.log('wrote events');
+
+      res.status(HttpStatus.OK).json(response);
     } catch (error) {
       console.log('events execute error');
 
