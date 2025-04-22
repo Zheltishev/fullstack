@@ -6,7 +6,7 @@ import { currentTime } from 'src/utils/currentTime';
 
 @Injectable()
 export class ActiveControllerService {
-  execute(message: DtoPowerOn, res: Response): void {
+  activeController(message: DtoPowerOn, res: Response): void {
     console.log('execute activeController');
 
     const response = {
