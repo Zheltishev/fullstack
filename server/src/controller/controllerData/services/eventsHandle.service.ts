@@ -17,7 +17,7 @@ export class EventsHandleService {
       const recordedEvents = message.events.map((event: DtoEvent) => ({
         flag: event.flag,
         event: event.event,
-        time: event.time,
+        time: new Date(event.time),
         card: event.card,
       }));
 
