@@ -5,6 +5,7 @@ import {
   DtoArrayEvents,
   DtoCheckAccess,
   DtoControllerData,
+  DtoEvent,
   DtoPing,
   DtoPowerOn,
   DtoSetActive,
@@ -51,7 +52,10 @@ export class GetControllerData {
     );
   }
 
-  checkData(data: DtoControllerData, @Res() res: Response): void {
+  async checkData(
+    data: DtoControllerData,
+    @Res() res: Response,
+  ): Promise<void> {
     console.log('messages ------------ ');
     console.log(data.messages);
 
@@ -59,7 +63,7 @@ export class GetControllerData {
       if (this.isPowerOn(message)) {
         this.activeController(message, res);
       } else if (this.isArrayEvents(message)) {
-        this.eventsHandle(message, res);
+        await this.eventsHandle(message, res);
       } else if (this.isSetActive(message)) {
         this.confirmActivation();
       } else if (this.isPing(message)) {
@@ -91,25 +95,28 @@ export class GetControllerData {
     res.status(HttpStatus.OK).json(response);
   }
 
-  eventsHandle(message: DtoArrayEvents, @Res() res: Response): void {
+  async eventsHandle(
+    message: DtoArrayEvents,
+    @Res() res: Response,
+  ): Promise<void> {
     console.log('execute eventsHandle');
     console.log(message.events);
 
     try {
-      // const eventPromises = message.events.map(async (event: DtoEvent) => {
-      //   const recordedEvent = {
-      //     flag: event.flag,
-      //     event: event.event,
-      //     time: event.time,
-      //     card: event.card,
-      //   };
+      const eventPromises = message.events.map(async (event: DtoEvent) => {
+        const recordedEvent = {
+          flag: event.flag,
+          event: event.event,
+          time: event.time,
+          card: event.card,
+        };
 
-      //   await this.prisma.event.create({
-      //     data: recordedEvent,
-      //   });
-      // });
+        await this.prisma.event.create({
+          data: recordedEvent,
+        });
+      });
 
-      // await Promise.all(eventPromises);
+      await Promise.all(eventPromises);
 
       const response = {
         date: currentTime(3),
