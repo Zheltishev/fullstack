@@ -65,7 +65,7 @@ export class GetControllerData {
 
     const response = {
       date: currentTime(3),
-      interval: 10,
+      interval: 100,
       messages: [
         {
           id: message.id,
@@ -134,18 +134,13 @@ export class GetControllerData {
   answerPing(message: DtoPing, @Res() res: Response): void {
     console.log('answer ping');
 
-    // const response = {
-    //   date: currentTime(3),
-    //   interval: 10,
-    //   messages: [
-    //     {
-    //       id: message.id,
-    //       success: 1,
-    //     },
-    //   ],
-    // };
+    const response = {
+      date: currentTime(3),
+      interval: 100,
+      messages: [],
+    };
 
-    res.status(HttpStatus.OK);
+    res.status(HttpStatus.OK).json(response);
   }
 
   confirmActivation(): void {
