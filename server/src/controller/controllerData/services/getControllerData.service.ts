@@ -11,9 +11,13 @@ import {
   DtoSetActive,
 } from 'src/dto/cotrollerData.dto';
 import { currentTime } from 'src/utils/currentTime';
+import { ActiveControllerService } from './activeController.service';
 
 @Injectable()
 export class GetControllerData {
+  constructor(
+    private readonly ActiveControllerService: ActiveControllerService,
+  ) {}
   prisma = new PrismaClient();
 
   private isPowerOn(message: any): message is DtoPowerOn {
@@ -61,7 +65,7 @@ export class GetControllerData {
 
     for (const message of data.messages) {
       if (this.isPowerOn(message)) {
-        this.activeController(message, res);
+        this.ActiveControllerService.execute(message, res);
       } else if (this.isArrayEvents(message)) {
         await this.eventsHandle(message, res);
       } else if (this.isSetActive(message)) {
@@ -74,25 +78,6 @@ export class GetControllerData {
         this.unknownType();
       }
     }
-  }
-
-  activeController(message: DtoPowerOn, @Res() res: Response): void {
-    console.log('execute activeController');
-
-    const response = {
-      date: currentTime(3),
-      interval: 100,
-      messages: [
-        {
-          id: message.id,
-          operation: 'set_active',
-          active: 1,
-          online: 1,
-        },
-      ],
-    };
-
-    res.status(HttpStatus.OK).json(response);
   }
 
   async eventsHandle(
