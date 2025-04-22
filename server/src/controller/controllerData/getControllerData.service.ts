@@ -103,20 +103,18 @@ export class GetControllerData {
     console.log(message.events);
 
     try {
-      const eventPromises = message.events.map(async (event: DtoEvent) => {
-        const recordedEvent = {
-          flag: event.flag,
-          event: event.event,
-          time: event.time,
-          card: event.card,
-        };
+      const eventPromises = message.events.map((event: DtoEvent) => ({
+        flag: event.flag,
+        event: event.event,
+        time: event.time,
+        card: event.card,
+      }));
 
-        await this.prisma.event.create({
-          data: recordedEvent,
-        });
+      await this.prisma.event.createMany({
+        data: eventPromises,
       });
 
-      await Promise.all(eventPromises);
+      console.log('All events saved successfully');
 
       const response = {
         date: currentTime(3),
@@ -130,23 +128,13 @@ export class GetControllerData {
         ],
       };
 
-      console.log('wrote events');
-
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
       console.log('events execute error');
 
-      if (error instanceof Error) {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-          message: 'An error occurred',
-          error: error.message,
-        });
-      } else {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-          message: 'An unknown error occurred',
-          error: String(error),
-        });
-      }
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 
