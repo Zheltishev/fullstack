@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { Response } from 'express';
 import {
   DtoArrayEvents,
+  DtoCheckAccess,
   DtoControllerData,
   DtoPing,
   DtoPowerOn,
@@ -41,6 +42,15 @@ export class GetControllerData {
     );
   }
 
+  private isCheckAccess(message: any): message is DtoCheckAccess {
+    return (
+      'id' in message &&
+      'operation' in message &&
+      'card' in message &&
+      'reader' in message
+    );
+  }
+
   checkData(data: DtoControllerData, @Res() res: Response): void {
     console.log('messages ------------ ');
     console.log(data.messages);
@@ -54,6 +64,8 @@ export class GetControllerData {
         this.confirmActivation();
       } else if (this.isPing(message)) {
         this.answerPing(message, res);
+      } else if (this.isCheckAccess(message)) {
+        this.checkAccess(message, res);
       } else {
         this.unknownType();
       }
@@ -139,6 +151,24 @@ export class GetControllerData {
       interval: 100,
       messages: [],
     };
+
+    res.status(HttpStatus.OK).json(response);
+  }
+
+  checkAccess(message: DtoCheckAccess, @Res() res: Response): void {
+    const response = {
+      date: currentTime(3),
+      interval: 10,
+      messages: [
+        {
+          id: message.id,
+          operation: 'events',
+          granted: 1,
+        },
+      ],
+    };
+
+    console.log('wrote events');
 
     res.status(HttpStatus.OK).json(response);
   }
