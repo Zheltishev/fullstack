@@ -65,7 +65,7 @@ export class GetControllerData {
       } else if (this.isPing(message)) {
         this.answerPing(message, res);
       } else if (this.isCheckAccess(message)) {
-        this.checkAccess(message, res);
+        this.checkAccess();
       } else {
         this.unknownType();
       }
@@ -155,23 +155,27 @@ export class GetControllerData {
     res.status(HttpStatus.OK).json(response);
   }
 
-  checkAccess(message: DtoCheckAccess, @Res() res: Response): void {
-    const response = {
-      date: currentTime(3),
-      interval: 10,
-      messages: [
-        {
-          id: message.id,
-          operation: 'events',
-          granted: 1,
-        },
-      ],
-    };
-
-    console.log('wrote events');
-
-    res.status(HttpStatus.OK).json(response);
+  checkAccess(): void {
+    console.log('checkAccess');
   }
+
+  // checkAccess(message: DtoCheckAccess, @Res() res: Response): void {
+  //   const response = {
+  //     date: currentTime(3),
+  //     interval: 10,
+  //     messages: [
+  //       {
+  //         id: message.id,
+  //         operation: 'events',
+  //         granted: 1,
+  //       },
+  //     ],
+  //   };
+
+  //   console.log('wrote events');
+
+  //   res.status(HttpStatus.OK).json(response);
+  // }
 
   confirmActivation(): void {
     console.log('confirmActivation');
